@@ -1,0 +1,16 @@
+
+.base {
+    display: flex;
+}
+
+.base .left-bar {
+    flex: 25%;
+}
+
+.base .center-bar {
+    flex: 50%;
+}
+
+.base .right-bar {
+    flex: 25%;
+}

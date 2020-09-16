@@ -1,0 +1,27 @@
+nav {
+    background-color: rgb(37, 40, 48);
+    margin-bottom: 20px;
+}
+
+.navbar .wrapper {
+    display: flex;
+    padding: 15px 0px;
+}
+
+.navbar .wrapper .link {
+    flex: 50%;
+    margin-left: 50px;
+}
+
+.navbar .wrapper .logout-link {
+    flex: 50%;
+    display: flex;
+    justify-content: end;
+    margin-right: 50px;
+}
+
+.navbar .wrapper a {
+    margin: 0px 10px;
+    text-decoration: none;
+    color: white;
+}

@@ -1,0 +1,17 @@
+{% extends 'pagebase.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="landing-page">
+        <div class="wrapper">
+            <h1>Twitter KW 666</h1>
+            <h4>Develop by: Nemo | Geby | Erwin</h4>
+            <div class="login-register">
+                <a href="{% url 'login_page' %}">Login</a>
+                <a href="{% url 'register_page' %}">Register</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock content%}

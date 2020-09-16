@@ -1,0 +1,22 @@
+{% extends "pagebase.html" %}
+{% load static %}
+
+{% block content%}
+    <div class="register-page">
+        <div class="wrapper">
+            <form action="" method="POST">
+                {% csrf_token%}
+                {% for field in form%}
+                    {{field.label_tag}}
+                    {{field.errorlist}}
+                    {{field}}
+                {% endfor %}
+                <button class="register-button" type="submit">Submit</button>
+                <div class="login-link">
+                    <p>Already have an account? <a href="{% url 'login_page' %}">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+

@@ -1,0 +1,43 @@
+
+.register-page .wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(42, 47, 58);
+}
+
+.register-page input {
+    display: block;
+    padding: 5px 5px;
+    width: 300px;
+}
+
+.register-page label {
+    display: block;
+    color: white;
+    margin: 10px 0px;
+}
+
+.register-page .register-button {
+    margin: 15px 0px;
+    padding: 8px 0px;
+    background-color: teal;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    letter-spacing: 2px;
+}
+
+.register-page .login-link p {
+    color: white;
+}
+
+.register-page .login-link a {
+    color: rgb(255, 109, 109);
+}

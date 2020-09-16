@@ -1,0 +1,21 @@
+  
+  
+  
+  
+  
+  
+    <div class="rt-option-wrapper">
+        <div class="container">
+            <button class="rt-no-comment">Retweet</button>
+            <button class="rt-with-comment">Retweet with comment</button>
+            <button class="rt-option-close">&#10060;</button>
+        </div>
+    </div>
+
+    <div class="comment-form-wrapper">
+        <form action="" class="comment-form">
+            <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+            <button type="submit" class="comment-form-submit">Submit</button>
+            <button class="comment-form-close">Close</button>
+        </form>
+    </div>

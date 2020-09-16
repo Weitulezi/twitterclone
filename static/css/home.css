@@ -1,0 +1,204 @@
+* {
+    margin: 0px;
+    color: rgb(241, 241, 241);
+}
+
+/* .home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+
+/* .home .wrapper {
+    width: 500px;
+} */
+
+.home button {
+    margin: 10px 0px;
+    cursor: pointer;
+    color: white;
+    background-color: teal;
+    border: none;
+}
+
+.home .tweet-box .button-comment, .button-retweet, .button-like {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.home .tweet-box .retweeted {
+    background-color: rgb(255, 71, 101);
+}
+
+body {
+    background-color: rgb(42, 47, 58);
+    color: rgb(255, 71, 101);
+}
+
+
+textarea {
+    display: block;
+    background-color: rgb(42, 47, 58);
+    padding: 10px;
+}
+
+.tweet-submit {
+    display: block;
+    color: rgb(241, 241, 241);
+    background-color: teal;
+    border: none;
+    padding: 5px 10px;
+    margin: 10px 0px;
+}
+
+form {
+    padding: 10px;
+}
+
+.home .tweet-box {
+    padding: 10px;
+    border-bottom: 1px solid aliceblue;
+    margin: 20px 0px;
+}
+
+.home .tweet-box a {
+    text-decoration: none;
+}
+
+.home .retweet-box a {
+    text-decoration: none;
+}
+
+.home .tweet-author {
+    margin: 10px 0px;
+}
+
+.home .tweet-content {
+    margin: 10px 0px;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+}
+
+.home .tweet-box .retweet-box {
+    margin: 10px 0px;
+    padding: 10px;
+}
+
+
+.home .tweet-box .retweet-box .retweet-content {
+    width: 500px;
+    margin: 10px 0px;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+}
+
+.rt-option-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    height: 200px;
+    width: 400px;
+    margin: -100px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+.rt-option-wrapper button {
+    cursor: pointer;
+}
+
+.rt-no-comment {
+    border: none;
+    background-color: teal;
+    color: white;
+    padding: 2px 7px;
+    font-size: 20px;
+    margin: 0px 3px;
+}
+
+.rt-with-comment {
+    border: none;
+    background-color: teal;
+    color: white;
+    padding: 2px 7px;
+    font-size: 20px;
+    margin: 0px 3px;
+}
+
+.rt-option-close {
+    border: none;
+    background-color: none;
+    color: white;
+    padding: 1px 7px;
+    font-size: 20px;
+    margin: 0px 3px;
+}
+
+.rt-form-wrapper {
+    display: none;
+    position: fixed;
+    height: 200px;
+    width: 400px;
+    margin: -100px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+.rt-form {
+    padding: 10px;
+    display: flex;
+    justify-items: center;
+    flex-direction: column;
+    background-color: rgb(37, 37, 37);
+}
+
+.rt-form textarea {
+    border: none;
+}
+
+.rt-form button {
+    background-color: teal;
+    margin-top: 10px;
+    padding: 5px 0px;
+    border: none;
+    cursor: pointer;
+}
+
+.comment-form-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    height: 200px;
+    width: 400px;
+    margin: -100px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+.comment-form-wrapper .comment-form {
+    padding: 10px;
+    display: flex;
+    justify-items: center;
+    flex-direction: column;
+    background-color: rgb(37, 37, 37);
+}
+
+.comment-form-wrapper button {
+    background-color: teal;
+    margin-top: 10px;
+    padding: 5px 0px;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+
+
+
+

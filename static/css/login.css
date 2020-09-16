@@ -1,0 +1,45 @@
+.login-page {
+    background-color: rgb(42, 47, 58);
+}
+
+.login-page .wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-page .wrapper label {
+    color: white;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.login-page form input {
+    display: block;
+    width: 400px;
+    height: 30px;
+    padding: 0px 4px;
+}
+
+.login-page .login-button {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0px;
+    padding: 5px 0px;
+    background-color: teal;
+    border: none;
+    color: white;
+    font-size:15px;
+    letter-spacing: 2px;
+}
+
+.login-page .register-link p {
+    color: white;
+}
+
+.login-page .register-link a {
+    color: rgb(255, 109, 109);
+}

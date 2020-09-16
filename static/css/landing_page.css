@@ -1,0 +1,52 @@
+* {
+    margin: 0px;
+
+}
+
+.landing-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(42, 47, 58);
+}
+
+.landing-page h1 {
+    font-size: 80px;
+    font-weight: 100;
+    color: rgb(255, 255, 255);
+}
+
+.landing-page h4 {
+    text-align: center;
+    color: white;
+    font-weight: 100;
+    letter-spacing: 2px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.landing-page .wrapper .login-register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 0px;
+}
+
+.landing-page .login-register a {
+    font-weight: 100;
+    letter-spacing: 1px;
+    margin: 0px 7px;
+    text-decoration: none;
+    background-color: rgb(42, 47, 58);
+    padding: 7px 10px;
+    color: rgb(255, 255, 255);
+    border: 1px  rgb(255, 255, 255) solid;
+}
+
+.landing-page .login-register a:hover {
+    background-color: teal;
+    color: white;
+    border: 1px teal solid;
+    border-radius: 5px;
+}

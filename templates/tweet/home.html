@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form.media}}
+        {{form.content.errors}}
+        {{form.content}}
+        <button class="tweet-submit" type="submit">Submit</button>
+    </form>
+
+    <div class="home">
+        <div id="wrapper">
+        </div>
+    </div>
+
+    <div class="rt-form-wrapper">
+        <form action="" class="rt-form">
+            <textarea name="" id="retweet-form-textarea" cols="30" rows="10"></textarea>
+            <button type="submit" class="retweet-form-submit">Submit</button>
+            <button class="retweet-form-close">Close</button>
+        </form>
+    </div>
+
+    <!-- <div class="rt-option-wrapper">
+        <div class="container">
+            <button class="rt-no-comment">Retweet</button>
+            <button class="rt-with-comment">Retweet with comment</button>
+            <button class="rt-option-close">&#10060;</button>
+        </div>
+    </div>
+
+    <div class="comment-form-wrapper">
+        <form action="" class="comment-form">
+            <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+            <button type="submit" class="comment-form-submit">Submit</button>
+            <button class="comment-form-close">Close</button>
+        </form>
+    </div> -->
+
+    <script>
+
+        // Logged in User Information
+        const username = '{{request.user}}'
+        const userId = '{{request.user.id}}'
+        
+        // CSRFTOKEN
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Fetch Tweets from API
+        function loadTweets() {
+            fetch('http://127.0.0.1:8000/api/tweet_list/')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                let tweetsContainer = document.getElementById('wrapper')
+                tweetsContainer.innerHTML = ''
+                for (let i=0; i<data.length; i++) {
+                    if (data[i].retweet === null) {
+                        let item = `
+                            <div class="tweet-box">
+                                <div class"tweet-author">
+                                    ${data[i].author_name}
+                                </div>
+                                <a href="http://127.0.0.1:8000/home/${data[i].author_name}/${data[i].id}/">
+                                    <div class="tweet-content">
+                                        ${data[i].content}
+                                    </div>
+                                </a>
+                                <div class="button-box">
+                                    <button id="${data[i].id}" class="button-comment" data-tweetid="${data[i].id}" data-authorid="${data[i].author}">Comment</button>
+                                    <button id="${data[i].id}" class="button-retweet" data-rtstate=""  data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Retweet ${data[i].tweet_rt_total}</button>
+                                    <button id="${data[i].id}" class="button-like" data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Like ${data[i].tweet_like_total}</button>
+                                </div>
+                                <div data-tweetid="${data[i].id}" class="rt-option-wrapper">
+                                    <div class="container">
+                                        <button data-tweetid="${data[i].id}" class="rt-no-comment">Retweet</button>
+                                        <button data-tweetid="${data[i].id}" class="rt-with-comment">Retweet with comment</button>
+                                        <button data-tweetid="${data[i].id}" class="rt-option-close">&#10060;</button>
+                                    </div>
+                                </div>
+                                <div class="comment-form-wrapper">
+                                    <form action="" class="comment-form">
+                                        <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+                                        <button type="submit" class="comment-form-submit">Submit</button>
+                                        <button class="comment-form-close">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        `
+                        tweetsContainer.innerHTML += item
+                    } else {
+                        if(data[i].author_name == username) {
+                            if(data[i].content == null) {
+                                let item = `
+                                    <div class="tweet-box">
+                                        <div class"tweet-author">
+                                            You retweeting this
+                                        </div>
+                                        <a href="http://127.0.0.1:8000/home/${data[i].author_name}/${data[i].id}/">
+                                            <div class="tweet-content">
+                                                
+                                            </div>
+                                        </a>
+                                        <div class="retweet-box">
+                                            <a href="http://127.0.0.1:8000/home/${data[i].retweet_author_name}/${data[i].retweet}/">
+                                                <div class="retweet-author">
+                                                    ${data[i].retweet_author_name}
+                                                </div>
+
+                                                <div class="retweet-content">
+                                                    ${data[i].retweet_content}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="button-box">
+                                            <button id="${data[i].retweet}" class="button-comment" data-tweetid="${data[i].retweet}" data-authorid="${data[i].retweet_author_name}" >Comment</button>
+                                            <button id="${data[i].retweet}" class="button-retweet" data-rtstate="retweeted" data-tweetid="${data[i].id}" data-authorid="${data[i].retweet_author_name}" >Retweet ${data[i].retweet_rt_total}</button>
+                                            <button id="${data[i].retweet}" class="button-like" data-tweetid="${data[i].retweet}" data-authorid="${data[i].retweet_author_name}" >Like ${data[i].retweet_like_total}</button>
+                                        </div>
+                                        <div data-tweetid="${data[i].retweet}" class="rt-option-wrapper">
+                                            <div class="container">
+                                                <button data-tweetid="${data[i].retweet}" class="rt-no-comment">Retweet</button>
+                                                <button data-tweetid="${data[i].retweet}" class="rt-with-comment">Retweet with comment</button>
+                                                <button data-tweetid="${data[i].retweet}" class="rt-option-close">&#10060;</button>
+                                            </div>
+                                        </div>
+                                        <div class="comment-form-wrapper">
+                                            <form action="" class="comment-form">
+                                                <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+                                                <button type="submit" class="comment-form-submit">Submit</button>
+                                                <button class="comment-form-close">Close</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                `
+                                tweetsContainer.innerHTML += item
+                            } else {
+                                let item = `
+                                    <div class="tweet-box">
+                                        <div class"tweet-author">
+                                            ${data[i].author_name}
+                                        </div>
+                                        <a href="http://127.0.0.1:8000/home/${data[i].author_name}/${data[i].id}/">
+                                            <div class="tweet-content">
+                                                ${data[i].content}
+                                            </div>
+                                        </a>
+                                        <div class="retweet-box">
+                                            <a href="http://127.0.0.1:8000/home/${data[i].retweet_author_name}/${data[i].retweet}/">
+                                                <div class="retweet-author">
+                                                    ${data[i].retweet_author_name}
+                                                </div>
+
+                                                <div class="retweet-content">
+                                                    ${data[i].retweet_content}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="button-box">
+                                            <button id="${data[i].id}" class="button-comment" data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Comment</button>
+                                            <button id="${data[i].id}" class="button-retweet" data-rtstate="" data-tweetid="${data[i].id}" data-authorid="${data[i].author}">Retweet ${data[i].tweet_rt_total}</button>
+                                            <button id="${data[i].id}" class="button-like" data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Like ${data[i].tweet_like_total}</button>
+                                        </div>
+                                        <div data-tweetid="${data[i].id}" class="rt-option-wrapper">
+                                            <div class="container">
+                                                <button data-tweetid="${data[i].id}" class="rt-no-comment">Retweet</button>
+                                                <button data-tweetid="${data[i].id}" class="rt-with-comment">Retweet with comment</button>
+                                                <button data-tweetid="${data[i].id}" class="rt-option-close">&#10060;</button>
+                                            </div>
+                                        </div>
+                                        <div class="comment-form-wrapper">
+                                            <form action="" class="comment-form">
+                                                <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+                                                <button type="submit" class="comment-form-submit">Submit</button>
+                                                <button class="comment-form-close">Close</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                `
+                                tweetsContainer.innerHTML += item
+                            }
+                        } else {
+                            if (data[i].content == null) {
+                                let item = `
+                                    <div class="tweet-box">
+                                        <div class"tweet-author">
+                                            ${data[i].author_name} retweet this
+                                        </div>
+                                        <a href="http://127.0.0.1:8000/home/${data[i].author_name}/${data[i].id}/">
+                                            <div class="tweet-content">
+                                                
+                                            </div>
+                                        </a>
+                                        <div class="retweet-box">
+                                            <a href="http://127.0.0.1:8000/home/${data[i].retweet_author_name}/${data[i].retweet}/">
+                                                <div class="retweet-author">
+                                                    ${data[i].retweet_author_name}
+                                                </div>
+
+                                                <div class="retweet-content">
+                                                    ${data[i].retweet_content}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="button-box">
+                                            <button id="${data[i].retweet}" class="button-comment" data-tweetid="${data[i].retweet}" data-authorid="${data[i].author}" >Comment</button>
+                                            <button id="${data[i].retweet}" class="button-retweet" data-rtstate="" data-tweetid="${data[i].retweet}" data-authorid="${data[i].author}" >Retweet ${data[i].retweet_rt_total}</button>
+                                            <button id="${data[i].retweet}" class="button-like" data-tweetid="${data[i].retweet}" data-authorid="${data[i].author}" >Like ${data[i].retweet_like_total}</button>
+                                        </div>
+                                        <div data-tweetid="${data[i].id}" class="rt-option-wrapper">
+                                            <div class="container">
+                                                <button data-tweetid="${data[i].retweet}" class="rt-no-comment">Retweet</button>
+                                                <button data-tweetid="${data[i].retweet}" class="rt-with-comment">Retweet with comment</button>
+                                                <button data-tweetid="${data[i].retweet}" class="rt-option-close">&#10060;</button>
+                                            </div>
+                                        </div>
+                                        <div class="comment-form-wrapper">
+                                            <form action="" class="comment-form">
+                                                <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+                                                <button type="submit" class="comment-form-submit">Submit</button>
+                                                <button class="comment-form-close">Close</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                `
+                                tweetsContainer.innerHTML += item
+                            } else {
+                                let item = `
+                                    <div class="tweet-box">
+                                        <div class"tweet-author">
+                                            ${data[i].author_name}
+                                        </div>
+                                        <a href="http://127.0.0.1:8000/home/${data[i].author_name}/${data[i].id}/">
+                                            <div class="tweet-content">
+                                                ${data[i].content}
+                                            </div>
+                                        </a>
+                                        <div class="retweet-box">
+                                            <a href="http://127.0.0.1:8000/home/${data[i].retweet_author_name}/${data[i].retweet}/">
+                                                <div class="retweet-author">
+                                                    ${data[i].retweet_author_name}
+                                                </div>
+
+                                                <div class="retweet-content">
+                                                    ${data[i].retweet_content}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="button-box">
+                                            <button id="${data[i].id}" class="button-comment" data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Comment</button>
+                                            <button id="${data[i].id}" class="button-retweet" data-rtstate="" data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Retweet ${data[i].tweet_rt_total}</button>
+                                            <button id="${data[i].id}" class="button-like" data-tweetid="${data[i].id}" data-authorid="${data[i].author}" >Like ${data[i].tweet_like_total}</button>
+                                        </div>
+                                        <div data-tweetid="${data[i].id}" class="rt-option-wrapper">
+                                            <div class="container">
+                                                <button data-tweetid="${data[i].id}" class="rt-no-comment">Retweet</button>
+                                                <button data-tweetid="${data[i].id}" class="rt-with-comment">Retweet with comment</button>
+                                                <button data-tweetid="${data[i].id}" class="rt-option-close">&#10060;</button>
+                                            </div>
+                                        </div>
+                                        <div class="comment-form-wrapper">
+                                            <form action="" class="comment-form">
+                                                <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+                                                <button type="submit" class="comment-form-submit">Submit</button>
+                                                <button class="comment-form-close">Close</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                `
+                                tweetsContainer.innerHTML += item
+                            }
+                        }
+                    }
+                }
+
+                // array of like, retweet, comment button Element
+                var likeButton = document.querySelectorAll('.button-like')
+                var retweetButton = document.querySelectorAll('.button-retweet')
+                var commentButton = document.querySelectorAll('.button-comment')
+
+                // // Handle Like button state
+                function loadTweetLikes() {
+                    fetch(`http://127.0.0.1:8000/api/tweet_like_list/`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let tweetLikeList = data
+                        for(let i=0; i < likeButton.length; i++) {
+                            for(let x=0; x < tweetLikeList.length; x++) {
+                                if (likeButton[i].id == tweetLikeList[x].tweet && userId == tweetLikeList[x].author) {
+                                    if (tweetLikeList[x].state == true)
+                                        likeButton[i].style.backgroundColor = 'rgb(255, 71, 101)'
+                                }
+                            }                    
+                        }       
+                    })
+                }
+                
+                // Fetch the tweetlikes data
+                loadTweetLikes()
+
+                // Handle Retweet button state
+                function loadUserTweetList() {
+                    fetch(`http://127.0.0.1:8000/api/user_tweet_list/`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let userTweetList = data
+                        for(let i=0; i < userTweetList.length; i++) {
+                            for(let x=0; x < retweetButton.length; x++) {
+                                if (userTweetList[i].retweet == retweetButton[x].id) {
+                                    retweetButton[x].style.backgroundColor = 'rgb(255, 71, 101)'
+                                    retweetButton[x].dataset.rtstate = 'retweeted'
+                                }
+                                if(retweetButton[x].dataset.rtstate == 'retweeted') {
+                                    retweetButton[x].style.backgroundColor = 'rgb(255, 71, 101)'
+                                }
+                            }
+                        }
+                    })
+                }
+
+                // Fetch logged in user Tweet
+                loadUserTweetList()
+
+                // Handle retweet button clicked
+                for(let i=0; i<retweetButton.length; i++) {
+                    retweetButton[i].addEventListener("click", retweetClick)
+                }
+                
+                // Handle Like button clicked
+                likeButton.forEach(btn => {
+                    btn.addEventListener('click', likeClick)
+                })
+
+                // Handle Comment button clicked]
+                commentButton.forEach(btn => {
+                    btn.addEventListener("click", commentClick)
+                })
+            })
+        }
+        // fetch all tweets
+        loadTweets()
+
+        // Handdle retweet button event click
+        function retweetClick(e) {
+            e.preventDefault()
+            let target = e.target
+            let tweetId = target.dataset.tweetid
+            console.log("rt btn click, tweetId:",tweetId)
+
+            // Retweet option wrapper
+            let rtOptionWrapper = document.querySelectorAll(".rt-option-wrapper")
+            let rtNoComment = document.querySelectorAll(".rt-no-comment")
+            let rtWithComment = document.querySelectorAll(".rt-with-comment")
+            let rtOptionClose = document.querySelectorAll(".rt-option-close")
+            for(let i=0; i<rtOptionWrapper.length; i++) {
+                if (rtOptionWrapper[i].dataset.tweetid == tweetId) {
+                    rtOptionWrapper[i].style.display = "block"
+                }
+            }
+
+        }
+
+        // handle like button event click
+        function likeClick(e) {
+            e.preventDefault()
+            const target = e.target
+            const tweetId = target.id
+            fetch('http://127.0.0.1:8000/handle_like/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({'userId': userId, 'tweetId': tweetId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.state == false) {
+                    target.style.backgroundColor = 'teal'
+                } else {
+                    target.style.backgroundColor = 'rgb(255, 71, 101)'
+                }
+                target.innerHTML = `Like ${data.likeTotal}`
+            })
+        }
+        
+        function commentClick(e) {
+            e.preventDefault
+            const target = e.target
+            const tweetId = target.id
+            const commentFormWrapper = document.querySelector(".comment-form-wrapper")
+            const commentSubmitButton = document.querySelector('.comment-form-submit')
+            const commentFormClose = document.querySelector(".comment-form-close")
+            const commentFormTextArea = document.getElementById("comment-form-textarea")
+            // Show the comment Form
+            commentFormWrapper.style.display = 'block'
+            // Cloing comment form 
+            commentFormClose.addEventListener("click", function(e) {
+                e.preventDefault()
+                commentFormWrapper.style.display = 'none'
+            })
+            // comment form submitted
+            commentSubmitButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                const commentContent = commentFormTextArea.value
+                fetch('http://127.0.0.1:8000/handle_comment/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({'userId': userId, 'tweetId': tweetId, "commentContent": commentContent})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    commentFormTextArea.value = ''
+                    commentFormWrapper.style.display = 'none'
+                })
+            })
+        }
+
+    </script>
+
+{% endblock %}

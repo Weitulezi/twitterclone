@@ -1,0 +1,49 @@
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    
+    <!-- TinyMCE CDN -->
+    <script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: '#retweet-form-editor'
+      });
+    </script>
+
+    <!-- CKEDITOR CDN -->
+    <script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tweet_detail.css' %}">
+    <title>Hello, world!</title>
+  </head>
+  <body>
+
+    {% include 'navbar.html' %}
+
+
+    <div class="base">
+      <div class="left-bar">
+        {% include 'leftbar.html' %}
+      </div>
+      <div class="center-bar">
+        {% block content %}
+        {% endblock %}
+      </div>
+      <div class="right-bar">
+        {% include 'rightbar.html' %}
+      </div>
+    </div>
+
+  </body>
+</html>

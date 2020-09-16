@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="tweet-detail-page">
+    <div class="wrapper">
+        <div class="tweet-box">
+            <div class="tweet-author">
+                <a href="{% url 'profile_view' tweet.author.username %}">{{tweet.author}}</a>
+            </div>
+            <div class="tweet-content">
+                {{tweet.content|safe}}
+            </div>
+            {% if tweet.retweet%}
+                <a href="{% url 'tweet_detail' tweet.retweet.author tweet.retweet.id %}">
+                    <div class="retweet-box">
+                        <div class="retweet-author">
+                            {{tweet.retweet.author}}
+                        </div>
+                        <div class="retweet-content">
+                            {{tweet.retweet.content|safe}}
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+            <div class="button-box">
+                <button data-tweetId="{{tweet.id}}" class="comment-button">Comment</button>
+                {% if rtState %}
+                    <button data-rtState="retweeted" style="background-color: rgb(255, 75, 105);" data-tweetId="{{tweet.id}}" class="retweet-button">Retweet {{tweet.tweet_rt_total}}</button>
+                {% else %}
+                    <button data-rtState="" data-tweetId="{{tweet.id}}" class="retweet-button">Retweet</button>
+                {% endif %}
+                {% if likeState %}
+                    <button data-likestate="liked" style="background-color:  rgb(255, 75, 105);" data-tweetId="{{tweet.id}}" class="like-button">Like {{tweet.tweet_like_total}}</button>
+                {% else%}
+                    <button data-tweetId="{{tweet.id}}" class="like-button">Like</button>
+                {% endif %}
+            </div>
+            <div class="tweet-comment-box">
+                <!-- Waiting to be fill by the API data -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Retweet box option -->
+    <div class="rt-option-wrapper">
+        <div class="container">
+            <button class="rt-no-comment">Retweet</button>
+            <button class="rt-with-comment">Retweet with comment</button>
+            <button class="rt-option-close">&#10060;</button>
+        </div>
+    </div>
+
+    <!-- Retweet Form Box -->
+    <div class="rt-form-wrapper">
+        <form action="" class="rt-form">
+            <textarea name="" id="retweet-form-textarea" cols="30" rows="10"></textarea>
+            <button type="submit" class="retweet-form-submit">Submit</button>
+            <button class="retweet-form-close">Close</button>
+        </form>
+    </div>
+
+    <!-- Comment Form -->
+    <div class="comment-form-wrapper">
+        <form action="" class="comment-form">
+            <textarea name="" id="comment-form-textarea" cols="30" rows="10"></textarea>
+            <button type="submit" class="comment-form-submit">Submit</button>
+            <button class="comment-form-close">Close</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    const username = "{{request.user}}"
+    const userId = "{{request.user.id}}"
+    const tweetId = "{{tweet.id}}"
+
+    // CSRFTOKEN
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function loadTweetComment() {
+        fetch(`http://127.0.0.1:8000/api/tweet_comment/${tweetId}/`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            const commentBoxElement = document.querySelector(".tweet-comment-box")
+            commentBoxElement.innerHTML = ''
+            for(let i = 0; i < data.length; i++) {
+                if(data[i].author_name != username && data[i].author != userId) {
+                    let item = `
+                        <div class="comment-box">
+                            <div class="comment-author">
+                                <a href="">
+                                    ${data[i].author_name}
+                                </a>
+                            </div>
+                            <div class="comment-content">
+                                <p>${data[i].content}</p>
+                            </div>
+                        </div>
+                    `
+                    commentBoxElement.innerHTML += item
+                } else {
+                    let item = `
+                        <div class="comment-box">
+                            <div class="comment-author">
+                                <a href="">
+                                    ${data[i].author_name}
+                                    <button data-commentid="${data[i].id}" class="comment-delete-button">Delete</button>
+                                </a>
+                            </div>
+                            <div class="comment-content">
+                                <p>${data[i].content}</p>
+                            </div>
+                        </div>
+                    `
+                    commentBoxElement.innerHTML += item
+                }
+                var commentDeleteButton = document.querySelectorAll(".comment-delete-button")
+                commentDeleteButton.forEach(btn => {
+                    btn.addEventListener("click", handleDeleteComment)
+                })
+            }
+        })
+    }
+    loadTweetComment()
+
+    // Handle Comment
+    const commentButton = document.querySelector(".comment-button")
+    commentButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        const target = e.target
+        const commentFormElement = document.querySelector(".comment-form-wrapper")
+        const commetFormClose = document.querySelector(".comment-form-close")
+        console.log(target)
+        commentFormElement.style.display = "flex"
+
+        // Closing comment form
+        commetFormClose.addEventListener("click", function(e) {
+            e.preventDefault()
+            const commentFormTextArea = document.getElementById("comment-form-textarea")
+            commentFormTextArea.value = ''
+            commentFormElement.style.display = 'none'
+        })
+
+        // Comment submitted
+        const commentSubmitButton = document.querySelector(".comment-form-submit")
+        commentSubmitButton.addEventListener("click", function(e) {
+            e.preventDefault()
+            const commentFormTextArea = document.getElementById("comment-form-textarea")
+            const commentContent = commentFormTextArea.value
+            const tweetId = target.dataset.tweetid
+            fetch('http://127.0.0.1:8000/handle_comment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({'userId': userId, 'tweetId': tweetId, "commentContent": commentContent})
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                commentFormTextArea.value = ''
+                commentFormElement.style.display = 'none'
+                loadTweetComment()
+            })
+        })
+    })
+
+    // Handle Retweet
+    const retweetButton = document.querySelector(".retweet-button")
+    retweetButton.addEventListener("click", function(e) {
+        e.preventDefault
+        const target = e.target
+        const tweetId = target.dataset.tweetid
+        const retweetFormOption = document.querySelector(".rt-option-wrapper")
+        const retweetOptionClose = document.querySelector(".rt-option-close")
+        const retweetWithComment = document.querySelector(".rt-with-comment")
+        const retweetNoComment = document.querySelector(".rt-no-comment")
+
+        const retweetFormElement = document.querySelector(".rt-form-wrapper")
+        const retweetFormTextarea = document.getElementById("retweet-form-textarea")
+        const retweetSubmitButton = document.querySelector(".retweet-form-submit")
+        const retweetFormCloseButton = document.querySelector(".retweet-form-close")
+
+        // Show the retweet option
+        retweetFormOption.style.display = "block"
+
+        // Tweet already Retweeted by User
+        if(target.dataset.rtstate == "retweeted") {
+            retweetNoComment.innerText = "undo Retweet"
+            // Undo Retweet
+            retweetNoComment.addEventListener("click", function undoRetweet(e) {
+                e.preventDefault()
+                console.log("undo retweet");
+                fetch(`http://127.0.0.1:8000/handle_unretweet/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({'userId': userId, 'tweetId': tweetId})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.tweet_rt_total != 0) {
+                        target.innerHTML = `Retweet ${data.tweet_rt_total}`
+                    } else {
+                        target.innerHTML = `Retweet`
+                    }
+                    target.style.backgroundColor = 'teal'
+                })
+                retweetFormOption.style.display = 'none'
+            })
+
+            // Change the retweet Content
+            retweetWithComment.addEventListener("click", function changeRetweetContent(e) {
+                e.preventDefault()
+                retweetFormOption.style.display = "none"
+                console.log("change retweet content");
+                // Show the retweet form
+                retweetFormElement.style.display = "block"
+
+                // Form Submitted
+                retweetSubmitButton.addEventListener("click", function(e) {
+                    e.preventDefault()
+                    const tweetContent = retweetFormTextarea.value
+                    fetch(`http://127.0.0.1:8000/handle_change_retweet_comment/`, {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify({'userId': userId, "tweetId": tweetId, 'tweetContent': tweetContent})
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        retweetFormTextarea.value = ""
+                        target.style.backgroundColor = "rgb(255, 71, 101)"
+                    })
+                    retweetFormElement.style.display = 'none'
+                })
+
+                // Form close
+                retweetFormCloseButton.addEventListener("click", function(e) {
+                    e.preventDefault()
+                    retweetFormTextarea.value = ""
+                    retweetFormElement.style.display = "none"
+                })
+            })
+
+            // Closing the RT form option
+            retweetOptionClose.addEventListener("click", function(e) {
+                e.preventDefault()
+                retweetFormOption.style.display = "none"
+            })
+        } else {
+            // Tweet hasn't bee retweeted
+            // Retweet tweet without content
+            retweetNoComment.addEventListener("click", function (e) {
+                e.preventDefault()
+                console.log("retwee with no comment");
+                fetch(`http://127.0.0.1:8000/handle_retweet_no_comment/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({'userId': userId, 'tweetId': tweetId})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.tweet_rt_total)
+                    target.style.backgroundColor = 'rgb(255, 71, 101)'
+                    target.innerHTML = `Retweet ${data.tweet_rt_total}`
+                    target.dataset.rtstate = "retweeted"
+                })
+                retweetFormOption.style.display = 'none'
+            })
+
+            // Retweet with content
+            retweetWithComment.addEventListener("click", function(e) {
+                e.preventDefault()
+                console.log("rt with comment");
+                retweetFormElement.style.display = "block"
+
+                retweetSubmitButton.addEventListener("click", function(e) {
+                    e.preventDefault()
+                    retweetFormOption.style.display = "none"
+                    const tweetContent = retweetFormTextarea.value
+                    fetch(`http://127.0.0.1:8000/handle_retweet_with_comment/`, {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify({'userId': userId, "tweetId": tweetId, 'tweetContent': tweetContent})
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                        retweetFormElement.style.display = 'none'
+                        target.style.backgroundColor = "rgb(255, 71, 101)"
+                        if(data.tweet_rt_total != 0) {
+                            target.innerHTML = `Retweet ${data.tweet_rt_total}`
+                        } else {
+                            target.innerHTML = `Retweet`
+                        }
+                    })
+                })
+
+                retweetFormCloseButton.addEventListener("click", function(e) {
+                    e.preventDefault()
+                    retweetFormTextarea.value = ""
+                    retweetFormElement.style.display = "none"
+                })
+
+            })
+
+            // Closing the RT form option
+            retweetOptionClose.addEventListener("click", function(e) {
+                e.preventDefault()
+                retweetFormOption.style.display = "none"
+            })
+        }
+
+        retweetNoComment.addEventListener("click", function(e) {
+            e.preventDefault()
+
+        })
+    })
+
+    // Handle Like
+    const likeButton = document.querySelector(".like-button")
+    likeButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        const target = e.target
+        if(likeButton.dataset.likestate == "liked" && likeButton.style.backgroundColor == "rgb(255, 75, 105)") {
+            fetch('http://127.0.0.1:8000/handle_like/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({'userId': userId, 'tweetId': tweetId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.likeTotal != 0) {
+                    target.innerHTML = `Like ${data.likeTotal}`
+                } else {
+                    target.innerHTML = `Like`
+                }
+                if(data.state == false) {
+                    target.style.backgroundColor = 'teal'
+                    target.dataset.likestate = ''
+                } else {
+                    target.style.backgroundColor = 'rgb(255, 71, 101)'
+                }
+            })
+        } else {
+            fetch('http://127.0.0.1:8000/handle_like/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({'userId': userId, 'tweetId': tweetId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.likeTotal != 0) {
+                    target.innerHTML = `Like ${data.likeTotal}`
+                } else {
+                    target.innerHTML = `Like`
+                }
+                if(data.state == false) {
+                    target.style.backgroundColor = 'teal'
+                    target.dataset.likestate = ''
+                } else {
+                    target.style.backgroundColor = 'rgb(255, 71, 101)'
+                }
+            })
+        }
+    })
+
+    // Handle delete Comment
+    function handleDeleteComment(e) {
+        e.preventDefault()
+        const target = e.target
+        const commentId = target.dataset.commentid
+        fetch(`http://127.0.0.1:8000/delete_comment/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({'userId': userId, 'commentId': commentId})
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+            loadTweetComment()
+        })
+    }
+
+</script>
+
+{% endblock %}

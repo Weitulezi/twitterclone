@@ -1,0 +1,154 @@
+.tweet-detail-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tweet-detail-page .tweet-author a {
+    margin: 0px;
+    text-decoration: none;
+}
+
+.tweet-detail-page .tweet-author {
+    margin-bottom: 10px;
+}
+
+.tweet-detail-page .tweet-content {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+}
+
+.tweet-detail-page .button-box {
+    margin: 10px 0px;
+}
+
+.tweet-detail-page .button-box button {
+    border: none;
+    background-color: teal;
+    color: white;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.tweet-detail-page .retweet-box {
+    padding: 15px;
+    border: 1px solid rgb(126, 126, 126);
+}
+
+.tweet-detail-page .comment-box a {
+    text-decoration: none;
+}
+
+.tweet-detail-page .tweet-comment-box {
+    margin: 10px 0px;
+}
+
+.tweet-detail-page .comment-box {
+    padding: 10px;
+    margin: 15px 0px;
+    border: 1px solid rgb(126, 126, 126);
+}
+
+.tweet-detail-page .comment-box a {
+    margin: 0px;
+}
+
+.tweet-detail-page .comment-box .comment-content {
+    margin: 10px 0px;
+}
+
+.tweet-comment-box .comment-delete-button {
+    background-color: rgb(255, 75, 105);
+    border: none;
+    color: white;
+    padding: 3px 7px;
+    cursor: pointer;
+}
+
+.tweet-detail-page .comment-form-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    height: 200px;
+    width: 400px;
+    margin: -100px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+.tweet-detail-page .rt-option-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    height: 200px;
+    width: 400px;
+    margin: -100px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+.tweet-detail-page  .rt-option-wrapper button {
+    cursor: pointer;
+}
+
+.tweet-detail-page .rt-no-comment {
+    border: none;
+    background-color: teal;
+    color: white;
+    padding: 2px 7px;
+    font-size: 20px;
+    margin: 0px 3px;
+}
+
+.tweet-detail-page .rt-with-comment {
+    border: none;
+    background-color: teal;
+    color: white;
+    padding: 2px 7px;
+    font-size: 20px;
+    margin: 0px 3px;
+}
+
+.tweet-detail-page .rt-option-close {
+    border: none;
+    background-color: none;
+    color: white;
+    padding: 1px 7px;
+    font-size: 20px;
+    margin: 0px 3px;
+}
+
+.tweet-detail-page .rt-form-wrapper {
+    display: none;
+    position: fixed;
+    height: 200px;
+    width: 400px;
+    margin: -100px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+.tweet-detail-page .rt-form {
+    padding: 10px;
+    display: flex;
+    justify-items: center;
+    flex-direction: column;
+    background-color: rgb(37, 37, 37);
+}
+
+.tweet-detail-page .rt-form textarea {
+    border: none;
+}
+
+.tweet-detail-page .rt-form button {
+    background-color: teal;
+    margin-top: 10px;
+    padding: 5px 0px;
+    border: none;
+    cursor: pointer;
+}
